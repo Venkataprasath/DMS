@@ -12,24 +12,41 @@ var packageDefinition = protoLoader.loadSync(
         oneofs: true
     });
 var resourcesProto = grpc.loadPackageDefinition(packageDefinition).resources;
+
 /**
  * Create Folder
  */
 function createFolder(message, callback) {
     var folder_name = message.request.name
-    var parent_id = message.request.parent_id
-    dbService.createResource(folder_name, parent_id, function(id) {
+    dbService.createResource(folder_name, message.request.user_id, function(id) {
         callback(null, {
             resource_id: id,
             resource_name: folder_name
         });
     });
 }
-
+/**
+ * get all resource from database
+ * @param {*} message 
+ * @param {*} callback 
+ */
 function getAllResources(message, callback) {
     dbService.getAllResources(function(resources) {
         callback(null, { resources });
     })
+}
+
+function addUser(message, callback) {
+    dbService.addUserToDatabase(message.request.email, message.request.password, function(id) {
+        console.log(id);
+        callback(null, { user_id: id })
+    })
+}
+
+function getResources(message, callback) {
+    dbService.getResourcesByUserID(message.request.user_id, function(resources) {
+        callback(null, { resources });
+    });
 }
 
 
@@ -40,7 +57,9 @@ function main() {
     var server = new grpc.Server();
     server.addService(resourcesProto.ResourceService.service, {
         createFolder: createFolder,
-        getAllResources: getAllResources
+        getAllResources: getAllResources,
+        addUser: addUser,
+        getResources: getResources
     });
     server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
         server.start();

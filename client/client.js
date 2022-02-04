@@ -14,8 +14,7 @@ var resourcesProto = grpc.loadPackageDefinition(packageDefinition).resources;
 function main() {
     var target = 'localhost:50051';
 
-    var client = new resourcesProto.ResourceService(target,
-        grpc.credentials.createInsecure());
+    var client = new resourcesProto.ResourceService(target, grpc.credentials.createInsecure());
     module.exports = client;
 }
 
