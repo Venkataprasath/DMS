@@ -1,0 +1,30 @@
+{
+  "name": "dms",
+  "version": "1.0.0",
+  "description": "Document management system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Venkataprasath/DMS.git"
+  },
+  "author": "Venkataprasath",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Venkataprasath/DMS/issues"
+  },
+  "homepage": "https://github.com/Venkataprasath/DMS#readme",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.1.0",
+    "@grpc/proto-loader": "^0.5.0",
+    "async": "^1.5.2",
+    "express": "^4.17.2",
+    "google-protobuf": "^3.0.0",
+    "lodash": "^4.6.1",
+    "minimist": "^1.2.0",
+    "mongodb": "^4.3.1",
+    "sqlite3": "^5.0.2"
+  }
+}

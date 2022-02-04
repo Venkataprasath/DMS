@@ -12,7 +12,6 @@ var packageDefinition = protoLoader.loadSync(
         oneofs: true
     });
 var resourcesProto = grpc.loadPackageDefinition(packageDefinition).resources;
-var folders = [];
 /**
  * Create Folder
  */
@@ -29,7 +28,6 @@ function createFolder(message, callback) {
 
 function getAllResources(message, callback) {
     dbService.getAllResources(function(resources) {
-        console.log(resources);
         callback(null, { resources });
     })
 }
