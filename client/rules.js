@@ -26,11 +26,13 @@ function decrypt(text) {
 }
 
 var rules = [
+    { url: "/", regex: false, "authenication": authenication_types.optional, method: "get" },
     { url: "/login", regex: false, "authenication": authenication_types.optional, method: "post" },
-    { url: "/register", regex: false, "authenication": authenication_types.optional, method: "post" },
+    { url: "/user", regex: false, "authenication": authenication_types.optional, method: "post" },
     { url: "/folder", regex: false, "authenication": authenication_types.required, method: "post" },
     { url: "/file", regex: false, "authenication": authenication_types.required, method: "post" },
     { url: "/file/\d*", regex: true, "authenication": authenication_types.required, method: "put" },
+    { url: "/file/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
     { url: "/file/\d*/move", regex: true, "authenication": authenication_types.required, method: "put" },
     { url: "/resources/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
 ]

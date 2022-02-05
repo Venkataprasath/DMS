@@ -55,10 +55,24 @@ app.put('/file/:id', (req, res) => {
     })
 })
 
+app.get('/file/:id', (req, res) => {
+    var body = req.body;
+    body.resource_id = req.params.id
+    body.user_id = req.user_id
+    client.getFile(body, function(err, response) {
+        if (err) {
+
+        } else {
+            res.send(response);
+        }
+    })
+})
+
 app.put('/file/:id/move', (req, res) => {
     var body = req.body;
     body.resource_id = req.params.id
     body.user_id = req.user_id
+    console.log(body)
     client.moveFile(body, function(err, response) {
         if (err) {
 
@@ -75,8 +89,8 @@ app.post('/user', (req, res) => {
 })
 
 app.get('/resources/:resource_id', (req, res) => {
-    client.getResources({ user_id: req.user_id, resource_id: req.params.resource_id }, function(err, response) {
-
+    client.getResources({ user_id: req.user_id, parent_id: req.params.resource_id }, function(err, response) {
+        res.send(response);
     });
 })
 app.get("/test", (req, res) => {

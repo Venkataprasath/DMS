@@ -62,7 +62,7 @@ function getResources(message, callback) {
         getFromDB(message.request.user_id, message.request.parent_id)
 
     function getFromDB(user_id, parent_id) {
-        dbService.getResources({ user_id: user_id, parent_id: parent_id }, function(resources) {
+        dbService.getResourcesByParentID(user_id, parent_id, function(resources) {
             callback(null, { resources });
         });
     }
@@ -88,7 +88,6 @@ function createFile(message, callback) {
 function updateFile(message, callback) {
     var file = message.request;
     checkPermissions([file.resource_id], file.user_id, function() {
-
         dbService.updateFileContent(file.resource_id, file.content, function(id) {
             callback(null, { resource_id: id })
         })
@@ -99,15 +98,25 @@ function updateFile(message, callback) {
 
 function moveFile(message, callback) {
     var request = message.request;
-    checkPermissions([request.resource_id, request.new_parent_id], function() {
-        dbService.moveFile(request.resource_id, file.new_parent_id, function(id) {
-            callback(null, { id })
+    checkPermissions([request.resource_id, request.new_parent_id], request.user_id, function() {
+        dbService.moveFile(request.resource_id, request.new_parent_id, function(id) {
+            callback(null, { resource_id: id })
         })
     }, err => {
         callback(null, { error_code: error.NOT_ALLOWED })
     })
 }
 
+function getFile(message, callback) {
+    var file = message.request;
+    checkPermissions([file.resource_id], file.user_id, function() {
+        dbService.getFile(file.resource_id, function(row) {
+            callback(null, row)
+        })
+    }, err => {
+        callback(null, { error_code: error.NOT_ALLOWED })
+    })
+}
 
 
 var _this = {
@@ -118,6 +127,7 @@ var _this = {
     createFile: createFile,
     updateFile: updateFile,
     moveFile: moveFile,
-    getUser: getUser
+    getUser: getUser,
+    getFile: getFile
 }
 module.exports = _this

@@ -93,10 +93,12 @@ function updateFileContent(resource_id, content, callback) {
 function moveFile(resource_id, new_parent_id, callback) {
     connectToDB(function(db) {
         var query = 'UPDATE RESOURCES SET parent_id=? where resource_id=?'
-        db.run(query, [new_parent_id, resource_id], (err) => {
+        console.log(query);
+        db.run(query, [new_parent_id, resource_id], function(err) {
             if (err) {
                 throw err;
             }
+            console.log(`Row(s) updated: ${this.changes}`);
             callback(resource_id);
         });
     });
@@ -176,6 +178,18 @@ function getResourcesByUserID(user_id, callback) {
     })
 }
 
+function getResourcesByParentID(user_id, parent_id, callback) {
+    connectToDB(function(db) {
+        db.all('select * from RESOURCES where parent_id=? and created_by=?', [parent_id, user_id], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            console.log(rows);
+            callback(rows);
+        });
+    })
+}
+
 function getRootID(user_id, callback) {
     connectToDB(function(db) {
         db.get('select * from RESOURCES where resource_type=? and created_by=?', [constants.RESOURCE_TYPE.ROOT, user_id], (err, row) => {
@@ -189,12 +203,14 @@ function getRootID(user_id, callback) {
 }
 
 function checkResources(resource_ids, user_id, success, error) {
-    console.log(resource_ids, user_id);
+
     connectToDB(function(db) {
-        db.all('select resource_id from RESOURCES where resource_id in (' + resource_ids.map(function() { return '?' }).join(',') + ') and created_by=?', [resource_ids, user_id], (err, rows) => {
-            console.log(rows)
+        var query = 'select resource_id from RESOURCES where resource_id in (' + resource_ids.map(function() { return '?' }).join(',') + ') and created_by=?';
+        console.log(query);
+        db.all(query, resource_ids.concat([user_id]), (err, rows) => {
+            console.log("test" + rows.length)
             if (err) {
-                error()
+                console.log(err);
             } else if (resource_ids.length == rows.length) {
                 success()
             } else {
@@ -221,17 +237,31 @@ function getUser(email, password, callback, errcallback) {
     })
 }
 
+function getFile(resource_id, callback) {
+    connectToDB(function(db) {
+        db.get('select RESOURCES.resource_id,content,resource_name,resource_type,parent_id from RESOURCES JOIN FILES ON RESOURCES.resource_id=FILES.resource_id where RESOURCES.resource_id=?', [resource_id], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            console.log(rows);
+            callback(rows);
+        });
+    })
+}
+
 var dbService = {
     createResource: createResource,
     getAllResources: getAllResources,
     addUserToDatabase: addUserToDatabase,
     getResourcesByUserID: getResourcesByUserID,
+    getResourcesByParentID: getResourcesByParentID,
     getRootID: getRootID,
     createFile: createFile,
     updateFileContent: updateFileContent,
     moveFile: moveFile,
     checkResources: checkResources,
-    getUser: getUser
+    getUser: getUser,
+    getFile: getFile
 }
 
 init();

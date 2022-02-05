@@ -6,22 +6,38 @@ service ResourceService {
     rpc createFolder(ResourceCreateRequest) returns (Resource) {}
     rpc getAllResources(Empty) returns (Resources) {}
     rpc addUser(User) returns (User) {}
-    rpc getResources(UserID) returns (Resources){}
+    rpc getResources(GetResources) returns (Resources){}
     rpc createFile(ResourceCreateRequest) returns (Resource) {}
     rpc updateFile(File) returns (Resource) {}
     rpc moveFile(MoveFileRequest) returns (Resource) {}
     rpc getUser(User) returns (UserID) {}
+    rpc getFile(File) returns (ResourceFile) {}
 }
 
 message File{
     int64 resource_id = 1;
     int64 user_id=2;
-    string content = 3;
+    optional string content = 3;
+}
+
+message ResourceFile{
+    int64 resource_id = 1;
+    string resource_name = 2;
+    int32 resource_type = 3;
+    int64 parent_id = 4;
+    int64 created_by = 5;
+    string content = 6;
+}
+
+message GetResources{
+    int64 user_id=1;
+    int64 parent_id=2;
 }
 
 message MoveFileRequest { 
     int64 resource_id = 1;
     int64 new_parent_id = 2;
+    int64 user_id=3;
 }
 
 message UserID{
@@ -47,7 +63,7 @@ message Resource {
     string resource_name = 2;
     int32 resource_type = 3;
     int64 parent_id = 4;
-    int64 user_id = 5;
+    int64 created_by = 5;
 }
 
 
