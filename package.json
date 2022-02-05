@@ -20,6 +20,7 @@
     "@grpc/grpc-js": "^1.1.0",
     "@grpc/proto-loader": "^0.5.0",
     "async": "^1.5.2",
+    "crypto": "^1.0.1",
     "express": "^4.17.2",
     "google-protobuf": "^3.0.0",
     "lodash": "^4.6.1",

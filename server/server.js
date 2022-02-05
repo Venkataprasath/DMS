@@ -21,6 +21,7 @@ var resourcesProto = grpc.loadPackageDefinition(packageDefinition).resources;
  */
 function main() {
     var server = new grpc.Server();
+    console.log(services)
     server.addService(resourcesProto.ResourceService.service, services);
     server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
         server.start();

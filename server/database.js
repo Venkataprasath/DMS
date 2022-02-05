@@ -1,4 +1,5 @@
 const sqlite3 = require("sqlite3").verbose();
+const e = require("express");
 const constants = require('../constants');
 
 function init() {
@@ -129,12 +130,13 @@ function closeDB() {
 function addUserToDatabase(email, password, callback) {
     connectToDB(function(db) {
         var query = 'INSERT into users(email,password) VALUES(?,?)';
-        db.run(query, [email, password], (err) => {
+        db.run(query, [email, password], function(err) {
             if (err) {
                 console.log(err)
                 throw err
             }
             var addroot_query = 'INSERT INTO RESOURCES(resource_name,resource_type,parent_id,created_by) VALUES(?,?,?,?)';
+            console.log(this.lastID)
             var user_id = this.lastID
             db.run(addroot_query, ['root', constants.RESOURCE_TYPE.ROOT, 0, user_id], (err) => {
                 if (err) {
@@ -173,7 +175,7 @@ function getResourcesByUserID(user_id, callback) {
 
 function getRootID(user_id, callback) {
     connectToDB(function(db) {
-        db.get('select * from RESOURCES where resources_type=? and user_id=?', [constants.RESOURCE_TYPE.ROOT, user_id], (err, row) => {
+        db.get('select * from RESOURCES where resource_type=? and created_by=?', [constants.RESOURCE_TYPE.ROOT, user_id], (err, row) => {
             if (err) {
                 throw err
             }
@@ -197,6 +199,23 @@ function checkResources(resource_ids, user_id, success, error) {
     })
 }
 
+function getUser(email, password, callback, errcallback) {
+    console.log(email, password)
+    connectToDB(function(db) {
+        db.get('select * from users where email=? and password=?', [email, password], (err, row) => {
+            console.log(row)
+            if (err) {
+                throw err;
+            }
+            if (row) {
+                callback(row.user_id);
+            } else {
+                errcallback()
+            }
+        });
+    })
+}
+
 var dbService = {
     createResource: createResource,
     getAllResources: getAllResources,
@@ -206,7 +225,8 @@ var dbService = {
     createFile: createFile,
     updateFileContent: updateFileContent,
     moveFile: moveFile,
-    checkResources: checkResources
+    checkResources: checkResources,
+    getUser: getUser
 }
 
 init();

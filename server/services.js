@@ -1,8 +1,17 @@
-const { all } = require('async');
 const constants = require('../constants');
 var dbService = require('./database');
 var error = require('../error');
 
+function getUser(message, callback) {
+    console.log(message);
+    var request = message.request;
+
+    dbService.getUser(request.email, request.password, function(id) {
+        callback(null, { user_id: id })
+    }, (err) => {
+        callback(null, { error_code: error.INVALID })
+    })
+}
 /**
  * Create Folder
  */
@@ -97,6 +106,8 @@ function moveFile(message, callback) {
     })
 }
 
+
+
 var _this = {
     createFolder: createFolder,
     getAllResources: getAllResources,
@@ -104,6 +115,7 @@ var _this = {
     addUser: addUser,
     createFile: createFile,
     updateFile: updateFile,
-    moveFile: moveFile
+    moveFile: moveFile,
+    getUser: getUser
 }
 module.exports = _this
