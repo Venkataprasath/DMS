@@ -5,11 +5,11 @@ First Commit
 To run the server
 Download zip from this and extract 
 
->cd DMS
->npm install
->cd server
->node server.js
+>cd DMS <br />
+>npm install <br />
+>cd server <br />
+>node server.js <br />
 
 Open another tab in terminal 
-cd ../client
-node api.js
+>cd ../client<br />
+>node api.js
