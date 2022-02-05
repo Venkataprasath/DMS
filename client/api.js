@@ -1,26 +1,30 @@
 const client = require('./client')
 const express = require('express');
 const urlValidator = require('./rules')
+const cookieParser = require("cookie-parser");
+
 var crypto = require('crypto');
 const e = require('express');
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use((req, res, next) => {
-//     console.log(req)
-//     urlValidator.validate(req, function(user_id) {
-//         req.user_id = user_id
-//         next()
-//     }, function() {
+app.use((req, res, next) => {
+    console.log(req.url)
+    urlValidator.validate(req, function(user_id) {
+        req.user_id = user_id
+        console.log(user_id)
+        next()
+    }, function() {
 
-//     })
-// })
+    })
+})
 
 app.post('/folder', (req, res) => {
-    client.createFolder({ name: req.body.name, user_id: req.body.user_id }, function(err, response) {
+    client.createFolder({ name: req.body.name, user_id: req.user_id }, function(err, response) {
         res.send(response.resource_name);
     });
 })
@@ -28,6 +32,7 @@ app.post('/folder', (req, res) => {
 app.post('/file', (req, res) => {
     var body = req.body;
     body.user_id = req.user_id
+    console.log(body);
     client.createFile(body, function(err, response) {
         if (err) {
 

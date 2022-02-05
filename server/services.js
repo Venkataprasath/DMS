@@ -3,10 +3,9 @@ var dbService = require('./database');
 var error = require('../error');
 
 function getUser(message, callback) {
-    console.log(message);
     var request = message.request;
-
     dbService.getUser(request.email, request.password, function(id) {
+        console.log(id)
         callback(null, { user_id: id })
     }, (err) => {
         callback(null, { error_code: error.INVALID })
@@ -69,15 +68,17 @@ function getResources(message, callback) {
     }
 }
 
-function checkPermissions(resources, callback, errcallback) {
-    dbService.checkResources(resources, callback, errcallback)
+function checkPermissions(resources, user_id, callback, errcallback) {
+    dbService.checkResources(resources, user_id, callback, errcallback)
 }
 
 function createFile(message, callback) {
-    checkPermissions([message.request.parent_id], function() {
-        var file = message.request;
-        dbService.createFile(file.resource_name, fileuser_id, message.file.parent_id, file.content, function(id) {
-            callback(null, { id })
+    console.log("File create")
+    var file = message.request;
+    checkPermissions([message.request.parent_id], file.user_id, function() {
+        console.log("Permission checked")
+        dbService.createFile(file.name, file.user_id, file.parent_id, file.content, function(id) {
+            callback(null, { resource_id: id })
         })
     }, err => {
         callback(null, { error_code: error.NOT_ALLOWED })
@@ -85,10 +86,11 @@ function createFile(message, callback) {
 }
 
 function updateFile(message, callback) {
-    checkPermissions([message.request.resource_id], function() {
-        var file = message.request;
+    var file = message.request;
+    checkPermissions([file.resource_id], file.user_id, function() {
+
         dbService.updateFileContent(file.resource_id, file.content, function(id) {
-            callback(null, { id })
+            callback(null, { resource_id: id })
         })
     }, err => {
         callback(null, { error_code: error.NOT_ALLOWED })

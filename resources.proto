@@ -7,7 +7,7 @@ service ResourceService {
     rpc getAllResources(Empty) returns (Resources) {}
     rpc addUser(User) returns (User) {}
     rpc getResources(UserID) returns (Resources){}
-    rpc addFile(ResourceCreateRequest) returns (Resource) {}
+    rpc createFile(ResourceCreateRequest) returns (Resource) {}
     rpc updateFile(File) returns (Resource) {}
     rpc moveFile(MoveFileRequest) returns (Resource) {}
     rpc getUser(User) returns (UserID) {}
@@ -15,7 +15,8 @@ service ResourceService {
 
 message File{
     int64 resource_id = 1;
-    string content = 2;
+    int64 user_id=2;
+    string content = 3;
 }
 
 message MoveFileRequest { 

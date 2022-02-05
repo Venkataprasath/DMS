@@ -50,11 +50,12 @@ function init() {
 function createResource(resource_name, user_id, parent_id, resource_type, callback) {
     connectToDB(function(db) {
         var query = 'INSERT INTO RESOURCES(resource_name,resource_type,parent_id,created_by) VALUES(?,?,?,?)';
-        db.run(query, [resource_name, resource_type, parent_id, user_id], (err) => {
+        db.run(query, [resource_name, resource_type, parent_id, user_id], function(err) {
             if (err) {
                 console.log(err);
                 throw err;
             }
+            console.log(this.lastID);
             callback(this.lastID);
         })
     })
@@ -64,7 +65,7 @@ function createFile(resource_name, user_id, parent_id, content, callback) {
     connectToDB(function(db) {
         createResource(resource_name, user_id, parent_id, constants.RESOURCE_TYPE.FILE, function(id) {
             var query = 'INSERT INTO FILES(resource_id,content) VALUES(?,?)';
-            db.run(query, [id, content], (err) => {
+            db.run(query, [id, content], function(err) {
                 if (err) {
                     console.log(err);
                     throw err;
@@ -76,13 +77,15 @@ function createFile(resource_name, user_id, parent_id, content, callback) {
 }
 
 function updateFileContent(resource_id, content, callback) {
+    console.log(resource_id, content)
     connectToDB(function(db) {
-        var query = 'UPDATE FILES SET CONTENT=? where resource_id=?'
-        db.run(query, [content, resource_id], (err) => {
+        var query = 'UPDATE FILES SET content=? where resource_id=?'
+        db.run(query, [content, resource_id], function(err) {
             if (err) {
                 throw err;
             }
-            callback(resource_id);
+            console.log(`Row(s) updated: ${this.changes}`);
+            callback(resource_id)
         });
     });
 }
@@ -186,8 +189,10 @@ function getRootID(user_id, callback) {
 }
 
 function checkResources(resource_ids, user_id, success, error) {
+    console.log(resource_ids, user_id);
     connectToDB(function(db) {
-        db.all('select resource_id from RESOURCES where resources_id in ? and user_id=?', [resource_ids, user_id], (err, rows) => {
+        db.all('select resource_id from RESOURCES where resource_id in (' + resource_ids.map(function() { return '?' }).join(',') + ') and created_by=?', [resource_ids, user_id], (err, rows) => {
+            console.log(rows)
             if (err) {
                 error()
             } else if (resource_ids.length == rows.length) {

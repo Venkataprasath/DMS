@@ -25,7 +25,7 @@ function decrypt(text) {
     return decrypted.toString();
 }
 
-var urls = [
+var rules = [
     { url: "/login", regex: false, "authenication": authenication_types.optional, method: "post" },
     { url: "/register", regex: false, "authenication": authenication_types.optional, method: "post" },
     { url: "/folder", regex: false, "authenication": authenication_types.required, method: "post" },
@@ -36,16 +36,21 @@ var urls = [
 ]
 
 function validateRequest(req, callback, err) {
-    console.log(req.url);
-    for (var i = 0; i < urls.length; i++) {
-        var url = urls[0];
-        if ((url.regex && new RegExp(url).test(req.uri)) || (!url.regex && url === req.url) && url.method == req.method) {
-            if (url.authenication) {
+
+    for (var i = 0; i < rules.length; i++) {
+        var rule = rules[i];
+        var url = rule.url
+        if (((rule.regex && new RegExp(url).test(req.url)) || (!rule.regex && url == req.url)) && rule.method.toUpperCase() == req.method) {
+            console.log('fgdfdfg')
+            if (rule.authenication) {
+                console.log(req.cookies);
                 var dms_cookie = req.cookies["dms_auth"];
                 var json;
                 try {
                     if (dms_cookie) {
+                        console.log(dms_cookie);
                         var data = decrypt(dms_cookie);
+                        console.log(data);
                         var json = JSON.parse(data);
                         if (json.user_id)
                             callback(json.user_id)
@@ -59,7 +64,7 @@ function validateRequest(req, callback, err) {
                 }
 
             } else {
-                console.log(req.uri);
+                console.log('dfgdfgdfg');
                 callback();
             }
             return;
