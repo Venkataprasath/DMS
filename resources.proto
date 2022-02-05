@@ -3,10 +3,23 @@ syntax="proto3";
 package resources;
 
 service ResourceService {
-    rpc createFolder(FolderRequest) returns (Resource) {}
+    rpc createFolder(ResourceCreateRequest) returns (Resource) {}
     rpc getAllResources(Empty) returns (Resources) {}
     rpc addUser(User) returns (User) {}
     rpc getResources(UserID) returns (Resources){}
+    rpc addFile(ResourceCreateRequest) returns (Resource) {}
+    rpc updateFile(File) returns (Resource) {}
+    rpc moveFile(MoveFileRequest) returns (Resource) {}
+}
+
+message File{
+    int64 resource_id = 1;
+    string content = 2;
+}
+
+message MoveFileRequest { 
+    int64 resource_id = 1;
+    int64 new_parent_id = 2;
 }
 
 message UserID{
@@ -17,9 +30,10 @@ message User{
     string email = 2;
     optional string password = 3;
 }
-message FolderRequest {
+message ResourceCreateRequest {
     string name = 1;
     int64 user_id = 2;
+    optional string content = 3;
 }
 
 message Empty {}
@@ -31,6 +45,7 @@ message Resource {
     int64 parent_id = 4;
     int64 user_id = 5;
 }
+
 
 message Resources{
     repeated Resource resources = 1;
