@@ -1,0 +1,45 @@
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row mb-10">
+            <div class="col-md-4">
+                <p>
+                {{#if homeFolder }}
+                <button class="btn btn-primary" onclick="newFolder()">New Folder</button>
+                {{/if}}
+                <button class="btn btn-primary" onclick="newFile()">New File</button>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            {{#each resources}}
+            <div class="col-md-4">
+              <div class="card mb-4 box-shadow">
+                <div class="card-body">
+                  <p class="card-text"> 
+                      {{#ifeq this.resource_type 1 }}
+                         <svg width="17" height="17" viewBox="0 0 17 17" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Artboard 8</title><defs><path id="a" d="M0 1h6l3 5h8v11H0z"/><path id="b" d="M6.3 3H17v4H8.4z"/></defs><g fill="none" fill-rule="evenodd"><use fill="#FFF" xlink:href="#a"/><path stroke="#F7AF16" d="M.5 1.5v15h16v-10H8.8l-3-5H.4z"/><g><use fill="#FFF6E6" xlink:href="#b"/><path stroke="#F7AF16" d="M7 3.5l1.7 3h7.8v-3H7z"/></g></g></svg>
+                         <a href="/dms/resources/{{this.resource_id}}">{{this.resource_name}}</a>
+                      {{else}}
+                      <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="a" d="M1 0h12v14H1z"/></defs><g fill="none" fill-rule="evenodd"><use fill="#E9F6FF" xlink:href="#a"/><path stroke="#009CFE" d="M1.5.5h11v13h-11z"/><path fill="#009CFE" d="M4 3h6v1H4zM4 5h6v1H4zM5 7h4v1H5z"/></g></svg>
+                        <span>{{this.resource_name}}</span>
+                      {{/ifeq}}
+                  </p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                    {{#ifeq this.resource_type 2 }}
+                      <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/file/{{this.resource_id}}">View</a>
+                      <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/file/{{this.resource_id}}?edit=true">Edit</a>
+                       <a type="button" class="btn btn-sm btn-outline-secondary" id="{{this.resource_id}}" onclick="moveFile(this)">Move</a>
+                    {{else}}
+                     <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/resources/{{this.resource_id}}">View</a>
+                    {{/ifeq}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> 
+            {{/each}}  
+          </div>
+        </div>
+      </div>
+      <script>window.parent_id={{parent_id}}</script>

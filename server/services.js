@@ -42,10 +42,15 @@ function getAllResources(message, callback) {
  * @param {*} callback 
  */
 function addUser(message, callback) {
-    dbService.addUserToDatabase(message.request.email, message.request.password, function(id) {
-        console.log(id);
-        callback(null, { user_id: id })
-    })
+    try {
+        dbService.addUserToDatabase(message.request.email, message.request.password, function(id) {
+            console.log(id);
+            callback(null, { user_id: id, email: message.request.email })
+        }, function() {
+            callback(null, { email: message.request.email, error_code: error.ALREADY_EXISTS });
+        })
+    } catch (err) {}
+
 }
 
 /**
@@ -63,7 +68,7 @@ function getResources(message, callback) {
 
     function getFromDB(user_id, parent_id) {
         dbService.getResourcesByParentID(user_id, parent_id, function(resources) {
-            callback(null, { resources });
+            callback(null, { resources: resources, parent_id: parent_id });
         });
     }
 }
@@ -73,12 +78,16 @@ function checkPermissions(resources, user_id, callback, errcallback) {
 }
 
 function createFile(message, callback) {
-    console.log("File create")
     var file = message.request;
     checkPermissions([message.request.parent_id], file.user_id, function() {
-        console.log("Permission checked")
-        dbService.createFile(file.name, file.user_id, file.parent_id, file.content, function(id) {
-            callback(null, { resource_id: id })
+        dbService.getResource(file.parent_id, function(resource) {
+            if (resource.resource_type != constants.RESOURCE_TYPE.FILE) {
+                dbService.createFile(file.name, file.user_id, file.parent_id, file.content, function(id) {
+                    callback(null, { resource_id: id })
+                })
+            } else {
+                callback(null, { error_code: error.NOT_ALLOWED })
+            }
         })
     }, err => {
         callback(null, { error_code: error.NOT_ALLOWED })
@@ -97,14 +106,28 @@ function updateFile(message, callback) {
 }
 
 function moveFile(message, callback) {
+    console.log("Test");
     var request = message.request;
-    checkPermissions([request.resource_id, request.new_parent_id], request.user_id, function() {
-        dbService.moveFile(request.resource_id, request.new_parent_id, function(id) {
-            callback(null, { resource_id: id })
+
+    if (request.new_parent_id == 0) {
+        dbService.getRootID(message.request.user_id, function(parent_id) {
+            request.new_parent_id = parent_id
+            transfer();
         })
-    }, err => {
-        callback(null, { error_code: error.NOT_ALLOWED })
-    })
+    } else {
+        transfer();
+    }
+
+    function transfer() {
+        console.log([request.resource_id, request.new_parent_id]);
+        checkPermissions([request.resource_id, request.new_parent_id], request.user_id, function() {
+            dbService.moveFile(request.resource_id, request.new_parent_id, function(id) {
+                callback(null, { resource_id: id })
+            })
+        }, err => {
+            callback(null, { error_code: error.NOT_ALLOWED })
+        })
+    }
 }
 
 function getFile(message, callback) {

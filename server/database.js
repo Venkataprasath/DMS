@@ -132,26 +132,30 @@ function closeDB() {
     }
 }
 
-function addUserToDatabase(email, password, callback) {
-    connectToDB(function(db) {
-        var query = 'INSERT into users(email,password) VALUES(?,?)';
-        db.run(query, [email, password], function(err) {
-            if (err) {
-                console.log(err)
-                throw err
-            }
-            var addroot_query = 'INSERT INTO RESOURCES(resource_name,resource_type,parent_id,created_by) VALUES(?,?,?,?)';
-            console.log(this.lastID)
-            var user_id = this.lastID
-            db.run(addroot_query, ['root', constants.RESOURCE_TYPE.ROOT, 0, user_id], (err) => {
+function addUserToDatabase(email, password, callback, errcallback) {
+    try {
+        connectToDB(function(db) {
+            var query = 'INSERT into users(email,password) VALUES(?,?)';
+            db.run(query, [email, password], function(err) {
                 if (err) {
                     console.log(err)
-                    throw err
+                    errcallback();
                 }
-                callback(user_id)
+                var addroot_query = 'INSERT INTO RESOURCES(resource_name,resource_type,parent_id,created_by) VALUES(?,?,?,?)';
+                console.log(this.lastID)
+                var user_id = this.lastID
+                db.run(addroot_query, ['root', constants.RESOURCE_TYPE.ROOT, 0, user_id], (err) => {
+                    if (err) {
+                        console.log(err)
+                        errcallback();
+                    }
+                    callback(user_id)
+                })
             })
         })
-    })
+    } catch (err) {
+        throw err;
+    }
 }
 
 function getAllResources(callback) {
@@ -162,6 +166,18 @@ function getAllResources(callback) {
             }
             console.log(rows);
             callback(rows);
+        });
+    })
+}
+
+function getResource(resource_id, callback) {
+    connectToDB(function(db) {
+        db.get('select * from RESOURCES where resource_id=?', [resource_id], (err, row) => {
+            if (err) {
+                throw err;
+            }
+            console.log(row);
+            callback(row);
         });
     })
 }
@@ -261,7 +277,8 @@ var dbService = {
     moveFile: moveFile,
     checkResources: checkResources,
     getUser: getUser,
-    getFile: getFile
+    getFile: getFile,
+    getResource: getResource
 }
 
 init();

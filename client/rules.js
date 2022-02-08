@@ -29,12 +29,16 @@ var rules = [
     { url: "/", regex: false, "authenication": authenication_types.optional, method: "get" },
     { url: "/login", regex: false, "authenication": authenication_types.optional, method: "post" },
     { url: "/user", regex: false, "authenication": authenication_types.optional, method: "post" },
-    { url: "/folder", regex: false, "authenication": authenication_types.required, method: "post" },
-    { url: "/file", regex: false, "authenication": authenication_types.required, method: "post" },
-    { url: "/file/\d*", regex: true, "authenication": authenication_types.required, method: "put" },
-    { url: "/file/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
-    { url: "/file/\d*/move", regex: true, "authenication": authenication_types.required, method: "put" },
-    { url: "/resources/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
+    { url: "/dms/api/folder", regex: false, "authenication": authenication_types.required, method: "post" },
+    { url: "/dms/api/file", regex: false, "authenication": authenication_types.required, method: "post" },
+    { url: "/dms/api/file/\d*", regex: true, "authenication": authenication_types.required, method: "put" },
+    { url: "/dms/api/file/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
+    { url: "/dms/api/file/\d*/move", regex: true, "authenication": authenication_types.required, method: "put" },
+    { url: "/dms/api/resources/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
+    { url: "/dms/api/resources", regex: true, "authenication": authenication_types.required, method: "get" },
+    { url: "/dms/resources/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
+    { url: "/dms/resources", regex: false, "authenication": authenication_types.required, method: "get" },
+    { url: "/dms/file/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
 ]
 
 function validateRequest(req, callback, err) {

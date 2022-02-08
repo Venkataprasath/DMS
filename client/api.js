@@ -1,35 +1,55 @@
 const client = require('./client')
 const express = require('express');
+const helpers = require('./handlebars-helper')
 const urlValidator = require('./rules')
 const cookieParser = require("cookie-parser");
+const path = require('path')
 
-var crypto = require('crypto');
-const e = require('express');
 const app = express();
 const port = 3000;
+const exphbs = require('express-handlebars');
+const e = require('express');
+var hbs = exphbs.create({
+    helpers: helpers //only need this
+});
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use('/dms', express.static(path.join(__dirname, '..', 'web')))
+
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+
+app.get('/', (req, res) => {
+    if (req.user_id) {
+        client.getResources({ user_id: req.user_id }, function(err, response) {
+            res.render('home', response);
+        });
+    } else {
+        res.sendFile('home.html', { root: __dirname })
+    }
+
+});
 
 app.use((req, res, next) => {
     console.log(req.url)
     urlValidator.validate(req, function(user_id) {
         req.user_id = user_id
-        console.log(user_id)
+
         next()
     }, function() {
-
+        res.redirect('/dms/login.html')
     })
 })
 
-app.post('/folder', (req, res) => {
+app.post('/dms/api/folder', (req, res) => {
     client.createFolder({ name: req.body.name, user_id: req.user_id }, function(err, response) {
         res.send(response.resource_name);
     });
 })
 
-app.post('/file', (req, res) => {
+app.post('/dms/api/file', (req, res) => {
     var body = req.body;
     body.user_id = req.user_id
     console.log(body);
@@ -42,7 +62,7 @@ app.post('/file', (req, res) => {
     })
 })
 
-app.put('/file/:id', (req, res) => {
+app.put('/dms/api/file/:id', (req, res) => {
     var body = req.body;
     body.resource_id = req.params.id
     body.user_id = req.user_id
@@ -55,7 +75,7 @@ app.put('/file/:id', (req, res) => {
     })
 })
 
-app.get('/file/:id', (req, res) => {
+app.get('/dms/api/file/:id', (req, res) => {
     var body = req.body;
     body.resource_id = req.params.id
     body.user_id = req.user_id
@@ -68,7 +88,7 @@ app.get('/file/:id', (req, res) => {
     })
 })
 
-app.put('/file/:id/move', (req, res) => {
+app.put('/dms/api/file/:id/move', (req, res) => {
     var body = req.body;
     body.resource_id = req.params.id
     body.user_id = req.user_id
@@ -88,17 +108,51 @@ app.post('/user', (req, res) => {
     });
 })
 
-app.get('/resources/:resource_id', (req, res) => {
-    client.getResources({ user_id: req.user_id, parent_id: req.params.resource_id }, function(err, response) {
+app.get('/dms/api/resources', (req, res) => {
+    client.getResources({ user_id: req.user_id }, function(err, response) {
         res.send(response);
     });
 })
-app.get("/test", (req, res) => {
-    console.log("test")
-    res.send("Working");
+
+app.get('/dms/resources', (req, res) => {
+    client.getResources({ user_id: req.user_id }, function(err, response) {
+        response.homeFolder = true;
+        res.render('home', response);
+    });
+})
+
+app.get('/dms/resources/:resource_id', (req, res) => {
+    client.getResources({ user_id: req.user_id, parent_id: req.params.resource_id }, function(err, response) {
+        response.homeFolder = false;
+        res.render('home', response);
+    });
+})
+
+app.get('/dms/file/:id', (req, res) => {
+    var body = req.body;
+    body.resource_id = req.params.id
+    body.user_id = req.user_id
+    client.getFile(body, function(err, response) {
+        if (err) {
+
+        } else {
+            if (req.query.edit) {
+                response.edit = true
+            }
+            res.render('fileview', response);
+        }
+    });
 });
+
+app.get('/dms/api/resources/:resource_id', (req, res) => {
+    client.getResources({ user_id: req.user_id, parent_id: req.params.resource_id }, function(err, response) {
+
+        res.send(response);
+    });
+});
+
+
 app.post('/login', (req, res) => {
-    console.log(req.body);
     client.getUser({ email: req.body.email, password: req.body.password }, function(err, response) {
         console.log(response);
         if (response.error_code) {
@@ -106,17 +160,11 @@ app.post('/login', (req, res) => {
         } else {
             var encrypted = urlValidator.encrypt(JSON.stringify(response));
             res.cookie('dms_auth', encrypted)
-            res.send("Logged in with cookie " + encrypted);
+            res.send("Success");
         }
 
     });
 });
-
-app.get('/', (req, res) => {
-    res.send("I am working")
-})
-
-
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

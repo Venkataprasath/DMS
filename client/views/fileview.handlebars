@@ -1,0 +1,21 @@
+<div class="album py-5 bg-light">
+    <div class="container">
+        
+        <div class="row">
+            <div class="col-md-12">
+              <p class="card-text"> File Name:<b>{{ resource_name }}</b></p>
+              <div class="card mb-4 box-shadow">
+                <div class="card-body">
+                  <p class="card-text" id="fileContent" {{#if edit }} contenteditable="true" {{/if}}> 
+                    {{ content }}
+                  </p>
+                </div>
+              </div>
+              {{#if edit }}
+              <button class="btn btn-sm btn-primary" onclick="saveFile(this)" id="{{this.resource_id}}">Save</button>
+              {{/if}}
+            </div> 
+             
+          </div>
+        </div>
+      </div>
