@@ -22,14 +22,7 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 app.get('/', (req, res) => {
-    if (req.user_id) {
-        client.getResources({ user_id: req.user_id }, function(err, response) {
-            res.render('home', response);
-        });
-    } else {
-        res.sendFile('home.html', { root: __dirname })
-    }
-
+    res.redirect('/dms/login.html')
 });
 
 app.use((req, res, next) => {

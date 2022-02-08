@@ -29,7 +29,7 @@
                     {{#ifeq this.resource_type 2 }}
                       <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/file/{{this.resource_id}}">View</a>
                       <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/file/{{this.resource_id}}?edit=true">Edit</a>
-                       <a type="button" class="btn btn-sm btn-outline-secondary" id="{{this.resource_id}}" onclick="moveFile(this)">Move</a>
+                       <a type="button" class="btn btn-sm btn-outline-secondary" id="{{this.resource_id}}" onclick="moveFile(this)" href="javascript:;">Move</a>
                     {{else}}
                      <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/resources/{{this.resource_id}}">View</a>
                     {{/ifeq}}

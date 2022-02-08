@@ -14,12 +14,41 @@ var login = function() {
             .then((response) => {
                 if (response == "Success") {
                     window.location.href = "/dms/resources"
+                } else {
+                    alert(response);
                 }
             })
             .catch(err => console.log(err))
     }
     return false;
 }
+
+var signup = function() {
+    var email = document.getElementById('inputEmail').value;
+    var password = document.getElementById('inputPassword').value;
+    if (email != "" && password != "") {
+        const data = { email: email, password: password };
+
+        fetch('/user', {
+                method: 'POST', // or 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }).then(response => response.text())
+            .then((response) => {
+                if (response.error_code && response.error_code == 143) {
+                    alert("Email already exist")
+                } else {
+                    window.location.href = "/dms/login.html"
+                }
+            })
+            .catch(err => console.log(err))
+    }
+    return false;
+}
+
+
 
 var saveFile = function(el) {
     var fileId = el.id;
@@ -36,6 +65,7 @@ var saveFile = function(el) {
             })
             .then(response => response.json())
             .then(data => {
+                alert("File saved successfully");
                 console.log('Success:', data);
             })
             .catch((error) => {
@@ -65,7 +95,7 @@ var createFolder = function() {
                 },
                 body: JSON.stringify(data),
             })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {
                 console.log('Success:', data);
                 window.location.reload();
