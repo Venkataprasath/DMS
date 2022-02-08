@@ -31,7 +31,7 @@ var rules = [
     { url: "/user", regex: false, "authenication": authenication_types.optional, method: "post" },
     { url: "/dms/api/folder", regex: false, "authenication": authenication_types.required, method: "post" },
     { url: "/dms/api/file", regex: false, "authenication": authenication_types.required, method: "post" },
-    { url: "/dms/api/file/\d*", regex: true, "authenication": authenication_types.required, method: "put" },
+    { url: "/dms/api/file/*", regex: true, "authenication": authenication_types.required, method: "put" },
     { url: "/dms/api/resource/\d*", regex: true, "authenication": authenication_types.required, method: "delete" },
     { url: "/dms/api/file/\d*", regex: true, "authenication": authenication_types.required, method: "get" },
     { url: "/dms/api/file/\d*/move", regex: true, "authenication": authenication_types.required, method: "put" },

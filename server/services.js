@@ -1,10 +1,20 @@
 const constants = require('../constants');
 var dbService = require('./database');
 var error = require('../error');
+var crypto = require('crypto'),
+    algorithm = 'aes-256-ctr',
+    password = 'd6F3Efeq';
+
+function encrypt(text) {
+    var cipher = crypto.createCipher(algorithm, password)
+    var crypted = cipher.update(text, 'utf8', 'hex')
+    crypted += cipher.final('hex');
+    return crypted;
+}
 
 function getUser(message, callback) {
     var request = message.request;
-    dbService.getUser(request.email, request.password, function(id) {
+    dbService.getUser(request.email, encrypt(request.password), (id) => {
         console.log(id)
         callback(null, { user_id: id })
     }, (err) => {
@@ -43,7 +53,7 @@ function getAllResources(message, callback) {
  */
 function addUser(message, callback) {
     try {
-        dbService.addUserToDatabase(message.request.email, message.request.password, function(id) {
+        dbService.addUserToDatabase(message.request.email, encrypt(message.request.password), function(id) {
             console.log(id);
             callback(null, { user_id: id, email: message.request.email })
         }, function() {
