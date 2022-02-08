@@ -1,3 +1,5 @@
+const { rejectLimit } = require("async");
+
 var login = function() {
     var email = document.getElementById('inputEmail').value;
     var password = document.getElementById('inputPassword').value;
@@ -188,8 +190,9 @@ var moveFileToTarget = function(el) {
         });
 }
 
-var editFile = function() {
-    var saveButton = document.querySelector('data-action["saveButton"]');
+var editFile = function(el) {
+    el.style.display = "none";
+    var saveButton = document.querySelector('[data-action="saveButton"]');
     saveButton.style.display = "block"
     document.getElementById('fileContent').setAttribute('contenteditable', true);
 }
