@@ -12,6 +12,7 @@ service ResourceService {
     rpc moveFile(MoveFileRequest) returns (Resource) {}
     rpc getUser(User) returns (UserID) {}
     rpc getFile(File) returns (ResourceFile) {}
+    rpc deleteResource(File) returns (ResourceId) {}
 }
 
 message File{
@@ -71,4 +72,8 @@ message Resource {
 message Resources{
     repeated Resource resources = 1;
     optional int64 parent_id = 2;
+}
+
+message ResourceId{
+    int64 resource_id=1;
 }

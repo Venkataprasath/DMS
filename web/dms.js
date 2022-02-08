@@ -1,5 +1,3 @@
-const { rejectLimit } = require("async");
-
 var login = function() {
     var email = document.getElementById('inputEmail').value;
     var password = document.getElementById('inputPassword').value;
@@ -195,4 +193,21 @@ var editFile = function(el) {
     var saveButton = document.querySelector('[data-action="saveButton"]');
     saveButton.style.display = "block"
     document.getElementById('fileContent').setAttribute('contenteditable', true);
+}
+
+var deleteResource = function(el) {
+    fetch('/dms/api/resource/' + el.id, {
+            method: 'DELETE', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            window.location.reload();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }

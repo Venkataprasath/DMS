@@ -30,8 +30,10 @@
                       <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/file/{{this.resource_id}}">View</a>
                       <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/file/{{this.resource_id}}?edit=true">Edit</a>
                        <a type="button" class="btn btn-sm btn-outline-secondary" id="{{this.resource_id}}" onclick="moveFile(this)" href="javascript:;">Move</a>
+                       <a type="button" class="btn btn-sm btn-danger" id="{{this.resource_id}}" onclick="deleteResource(this)" href="javascript:;">Delete</a>
                     {{else}}
                      <a type="button" class="btn btn-sm btn-outline-secondary" href="/dms/resources/{{this.resource_id}}">View</a>
+                     <a type="button" class="btn btn-sm btn-danger" id="{{this.resource_id}}" onclick="deleteResource(this)" href="javascript:;">Delete</a>
                     {{/ifeq}}
                     </div>
                   </div>

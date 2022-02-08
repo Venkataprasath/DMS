@@ -141,6 +141,19 @@ function getFile(message, callback) {
     })
 }
 
+function deleteResource(message, callback) {
+    var file = message.request;
+    console.log("Delete", file);
+    checkPermissions([file.resource_id], file.user_id, function() {
+        console.log(file.resource_id);
+        dbService.deleteResourceFromDB(file.resource_id, function() {
+            callback(null, file.resource_id)
+        })
+    }, err => {
+        callback(null, { error_code: error.NOT_ALLOWED })
+    })
+}
+
 
 var _this = {
     createFolder: createFolder,
@@ -151,6 +164,7 @@ var _this = {
     updateFile: updateFile,
     moveFile: moveFile,
     getUser: getUser,
-    getFile: getFile
+    getFile: getFile,
+    deleteResource: deleteResource
 }
 module.exports = _this

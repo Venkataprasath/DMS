@@ -42,6 +42,12 @@ app.post('/dms/api/folder', (req, res) => {
     });
 })
 
+app.delete('/dms/api/resource/:id', (req, res) => {
+    client.deleteResource({ resource_id: req.params.id, user_id: req.user_id }, function(err, response) {
+        res.send(response);
+    })
+});
+
 app.post('/dms/api/file', (req, res) => {
     var body = req.body;
     body.user_id = req.user_id

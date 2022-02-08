@@ -39,6 +39,7 @@ function init() {
         });
         // Always close the connection with database
         db.close((err) => {
+            local.db = false
             if (err) {
                 console.error(err.message);
             }
@@ -49,16 +50,48 @@ function init() {
 
 function createResource(resource_name, user_id, parent_id, resource_type, callback) {
     connectToDB(function(db) {
-        var query = 'INSERT INTO RESOURCES(resource_name,resource_type,parent_id,created_by) VALUES(?,?,?,?)';
-        db.run(query, [resource_name, resource_type, parent_id, user_id], function(err) {
-            if (err) {
-                console.log(err);
-                throw err;
-            }
-            console.log(this.lastID);
-            callback(this.lastID);
-        })
+        db.all('select * from resources where parent_id=?', [parent_id], (err, rows) => {
+            resource_name = getCorrectedName(resource_name, rows);
+            var query = 'INSERT INTO RESOURCES(resource_name,resource_type,parent_id,created_by) VALUES(?,?,?,?)';
+            db.run(query, [resource_name, resource_type, parent_id, user_id], function(err) {
+                if (err) {
+                    console.log(err);
+                    throw err;
+                }
+                console.log(this.lastID);
+                callback(this.lastID);
+            })
+        });
     })
+}
+
+function getCorrectedName(name, rows) {
+    if (name.indexOf(".") == 0) {
+        name = name.replaceAll("\\.+", ".");
+        name = name.replaceFirst(".", "");
+    }
+    var name_correct = name.replaceAll("[<>?\\\\%/\"+]+", "-"); //No I18N
+    name = name_correct;
+    var name_adjusted = false;
+    var counter = 1;
+    if (rows != null) {
+        while (!name_adjusted) {
+            name_adjusted = true;
+            for (var i = 0; i < rows.length; i++) {
+                var name_chk = rows[i].resource_name;
+                if (name_chk == (name_correct)) {
+                    name_adjusted = false;
+                    if (name.indexOf('.') != -1) {
+                        name_correct = name.substring(0, name.lastIndexOf('.')) + "-" + counter + name.substring(name.lastIndexOf('.'));
+                    } else {
+                        name_correct = name + "-" + counter;
+                    }
+                    counter++;
+                }
+            }
+        }
+    }
+    return name_correct;
 }
 
 function createFile(resource_name, user_id, parent_id, content, callback) {
@@ -110,11 +143,12 @@ function connectToDB(callback) {
             if (err) {
                 console.error(err.message);
             }
+            local.db = db;
             console.log('Connected to the users.db database.');
             callback(db);
         });
     } else {
-        callback(db);
+        callback(local.db);
     }
 }
 var local = {}
@@ -265,6 +299,17 @@ function getFile(resource_id, callback) {
     })
 }
 
+function deleteResourceFromDB(resource_id, callback) {
+    connectToDB(function(db) {
+        db.run('delete from resources where resource_id=? or parent_id=?', [resource_id, resource_id], (err) => {
+            if (err) {
+                throw err;
+            }
+            callback();
+        });
+    });
+}
+
 var dbService = {
     createResource: createResource,
     getAllResources: getAllResources,
@@ -278,7 +323,8 @@ var dbService = {
     checkResources: checkResources,
     getUser: getUser,
     getFile: getFile,
-    getResource: getResource
+    getResource: getResource,
+    deleteResourceFromDB: deleteResourceFromDB
 }
 
 init();
