@@ -187,3 +187,9 @@ var moveFileToTarget = function(el) {
             console.error('Error:', error);
         });
 }
+
+var editFile = function() {
+    var saveButton = document.getElementById('saveButton');
+    saveButton.style.display = "block"
+    document.getElementById('fileContent').setAttribute('contenteditable', true);
+}

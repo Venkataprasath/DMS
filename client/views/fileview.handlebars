@@ -1,6 +1,14 @@
 <div class="album py-5 bg-light">
     <div class="container">
-        
+        <div class="row mb-10">
+            <div class="col-md-4">
+                <p>
+                {{#ifeq edit false }}
+                <button class="btn btn-primary" onclick="editFile()">Edit</button>
+                {{/ifeq}}
+                </p>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
               <p class="card-text"> File Name:<b>{{ resource_name }}</b></p>
@@ -11,9 +19,9 @@
                   </p>
                 </div>
               </div>
-              {{#if edit }}
-              <button class="btn btn-sm btn-primary" onclick="saveFile(this)" id="{{this.resource_id}}">Save</button>
-              {{/if}}
+              
+              <button id="saveButton" {{#if edit }} style="display:block"  {{else}} style="display:none" {{/if}} class="btn btn-sm btn-primary" onclick="saveFile(this)" id="{{this.resource_id}}">Save</button>
+             
             </div> 
              
           </div>
