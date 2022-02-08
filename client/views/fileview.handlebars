@@ -20,7 +20,7 @@
                 </div>
               </div>
               
-              <button id="saveButton" {{#if edit }} style="display:block"  {{else}} style="display:none" {{/if}} class="btn btn-sm btn-primary" onclick="saveFile(this)" id="{{this.resource_id}}">Save</button>
+              <button data-action="saveButton" {{#if edit }} style="display:block"  {{else}} style="display:none" {{/if}} class="btn btn-sm btn-primary" onclick="saveFile(this)" id="{{this.resource_id}}">Save</button>
              
             </div> 
              

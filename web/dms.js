@@ -189,7 +189,7 @@ var moveFileToTarget = function(el) {
 }
 
 var editFile = function() {
-    var saveButton = document.getElementById('saveButton');
+    var saveButton = document.querySelector('data-action["saveButton"]');
     saveButton.style.display = "block"
     document.getElementById('fileContent').setAttribute('contenteditable', true);
 }
